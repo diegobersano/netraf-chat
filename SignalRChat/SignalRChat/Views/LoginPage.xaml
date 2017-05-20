@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             x:Class="SignalRChat.Views.Login"
+             Title="SignalR Chat">
+    <StackLayout Padding="20">
+        <Label>Nombre:</Label>
+        <Entry x:Name="UserName" Placeholder="Nombre de usuario"></Entry>
+        <Button Clicked="Button_OnClicked" Text="Ingresar" 
+                BackgroundColor="{StaticResource Primary}"
+                TextColor="{StaticResource LightBackgroundColor}"/>
+    </StackLayout>
+</ContentPage>

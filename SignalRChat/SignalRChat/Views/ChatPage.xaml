@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SignalRChat.Views.ChatPage"
+             Title="SignalR Chat">
+    <StackLayout Padding="20" VerticalOptions="FillAndExpand">
+        <Label Text="Chat" FontSize="40" />
+        <Label Text="Mensaje" />
+        <Entry x:Name="MessageInput" />
+        <Button Text="Enviar" x:Name="SendButton" Clicked="SendButton_OnClicked" />
+        <Button Text="Grabar" x:Name="RecordButton" Clicked="RecordButton_OnClicked" />
+
+        <ListView x:Name="MessagesList"
+                HasUnevenRows="True"
+                CachingStrategy="RecycleElement">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Padding="10">
+                            <Label Text="{Binding Text}"
+                                       LineBreakMode="NoWrap"
+                                       Style="{DynamicResource ListItemTextStyle}"
+                                       FontSize="16"/>
+                            <Label Text="{Binding SendDetail}"
+                                       LineBreakMode="NoWrap"
+                                       Style="{DynamicResource ListItemDetailTextStyle}"
+                                       FontSize="13"/>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</ContentPage>
