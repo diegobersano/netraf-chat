@@ -1,4 +1,4 @@
-﻿using SignalRChat.Models;
+﻿using SignalRChat.Contracts;
 using System.Collections.ObjectModel;
 
 namespace SignalRChat.ViewModels
@@ -7,7 +7,7 @@ namespace SignalRChat.ViewModels
     {
         public ChatViewModel()
         {
-            this.Messages = new ObservableCollection<Message>();
+            Messages = new ObservableCollection<Message>();
         }
 
         public string Text { get; set; }

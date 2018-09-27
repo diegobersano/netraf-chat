@@ -1,5 +1,4 @@
-﻿using SignalRChat.Services;
-using SignalRChat.Views;
+﻿using SignalRChat.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -11,8 +10,6 @@ namespace SignalRChat
         public static string ConnectionId { get; set; }
         public static string UserName { get; set; }
 
-        public static IChatServices ChatServices = DependencyService.Get<IChatServices>();
-
         public App()
         {
             InitializeComponent();
@@ -22,7 +19,7 @@ namespace SignalRChat
 
         public static void SetMainPage()
         {
-            Current.MainPage = new NavigationPage(new Login());
+            Current.MainPage = new NavigationPage(new LoginPage());
         }
     }
 }
