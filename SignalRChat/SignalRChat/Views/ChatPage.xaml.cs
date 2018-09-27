@@ -1,67 +1,80 @@
-﻿using SignalRChat.Models;
-using SignalRChat.Services;
+﻿using Plugin.Toasts;
+using SignalRChat.Contracts;
+using SignalRChat.Features;
 using SignalRChat.ViewModels;
 using System;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace SignalRChat.Views
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ChatPage : ContentPage
     {
-        private readonly IAudioRecorderService _audioRecorderService = DependencyService.Get<IAudioRecorderService>();
-        private bool _isRecording;
-        private readonly ChatViewModel chatViewModel = new ChatViewModel();
+        private readonly IAudioRecorder _audioRecorder = DependencyService.Get<IAudioRecorder>();
+        private readonly IChatService _chatService = DependencyService.Get<IChatService>();
+        private readonly ISpeechService _speechService = DependencyService.Get<ISpeechService>();
+        private readonly IToastNotificator _notificator = DependencyService.Get<IToastNotificator>();
+        private readonly ChatViewModel _chatViewModel = new ChatViewModel();
+
+        private bool isRecording;
 
         public ChatPage()
         {
             InitializeComponent();
 
-            App.ChatServices.OnAudioRecognized += ChatServicesOnOnAudioRecognized;
-            App.ChatServices.OnMessageReceived += ChatServicesOnOnMessageReceived;
+            _chatService.OnAudioRecognized += ChatService_OnAudioRecognized;
+            _chatService.OnMessageReceived += ChatService_OnMessageReceived;
+            _chatService.OnNewUser += ChatService_OnNewUser;
 
-            this.MessagesList.RowHeight = 100;
-            this.MessagesList.ItemsSource = chatViewModel.Messages;
+            MessagesList.RowHeight = 100;
+            MessagesList.ItemsSource = _chatViewModel.Messages;
         }
 
-        private void ChatServicesOnOnMessageReceived(object sender, Message message)
+        private async void ChatService_OnNewUser(object sender, string name)
         {
-            chatViewModel.Messages.Add(message);
+            var options = new NotificationOptions
+            {
+                Title = $"{name} está conectado al chat",
+                Description = $"{name} está conectado al chat"
+            };
 
-            this.MessagesList.RowHeight = 100;
-            this.MessagesList.IsEnabled = true;
+            await _notificator.Notify(options);
         }
 
-        private void ChatServicesOnOnAudioRecognized(object sender, string text)
+        private void ChatService_OnMessageReceived(object sender, Message message)
         {
-            App.ChatServices.Send(App.UserName, text);
+            _chatViewModel.Messages.Add(message);
+
+            MessagesList.RowHeight = 100;
+            MessagesList.IsEnabled = true;
+        }
+
+        private void ChatService_OnAudioRecognized(object sender, string text)
+        {
+            _chatService.Send(App.UserName, text);
         }
 
         private void SendButton_OnClicked(object sender, EventArgs e)
         {
-            App.ChatServices.Send(App.UserName, this.MessageInput.Text);
+            _chatService.Send(App.UserName, MessageInput.Text);
 
-            this.MessageInput.Text = string.Empty;
+            MessageInput.Text = string.Empty;
         }
 
         private async void RecordButton_OnClicked(object sender, EventArgs e)
         {
-            if (!_isRecording)
+            if (!isRecording)
             {
-                this._isRecording = true;
-                this.RecordButton.Text = "Grabando...";
-                this._audioRecorderService.StartRecording();
+                isRecording = true;
+                RecordButton.Text = "Grabando...";
+                _audioRecorder.StartRecording();
             }
             else
             {
-                this._isRecording = false;
-                this.RecordButton.Text = "Grabar";
-                this._audioRecorderService.StopRecording();
+                isRecording = false;
+                RecordButton.Text = "Grabar";
+                _audioRecorder.StopRecording();
 
-                var service = new BingSpeechService();
-
-                await service.RecognizeSpeechAsync(Constants.AudioFilename);
+                await _speechService.RecognizeSpeechAsync(Constants.AudioFilename);
             }
         }
     }
